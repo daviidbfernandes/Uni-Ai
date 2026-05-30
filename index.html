@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniAI — Plataforma Acadêmica Inteligente</title>
+  <meta name="description" content="A plataforma de inteligência artificial mais completa para universitários e pós-graduandos brasileiros.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com; img-src 'self' data: blob:; worker-src blob:; frame-ancestors 'none';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════ CUSTOM CURSOR -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ══════════════════════════════════════════ PAGE TRANSITION -->
+<div class="page-transition" id="pageTransition"></div>
+
+<!-- ══════════════════════════════════════════ PRELOADER -->
+<div id="preloader" class="preloader">
+  <div class="preloader-inner">
+    <div class="preloader-logo">
+      <svg width="44" height="44" viewBox="0 0 40 40" fill="none">
+        <rect width="40" height="40" rx="12" fill="url(#pg)"/>
+        <path d="M12 28V14l8 7 8-7v14" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs><linearGradient id="pg" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#AA2340"/><stop offset="1" stop-color="#7a1a2e"/></linearGradient></defs>
+      </svg>
+      <span>UniAI</span>
+    </div>
+    <div class="preloader-track"><div class="preloader-bar" id="preloaderBar"></div></div>
+    <p class="preloader-hint">Iniciando plataforma...</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ HEADER -->
+<header id="header" class="header">
+  <div class="container header-inner">
+    <a class="header-logo" href="#" onclick="navigate('home');return false;">
+      <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
+        <rect width="40" height="40" rx="10" fill="url(#hg)"/>
+        <path d="M12 28V14l8 7 8-7v14" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs><linearGradient id="hg" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#AA2340"/><stop offset="1" stop-color="#7a1a2e"/></linearGradient></defs>
+      </svg>
+      <span>Uni<em>AI</em></span>
+    </a>
+
+    <nav class="header-nav" id="desktopNav">
+      <a href="#" class="nav-link" data-page="home" onclick="navigate('home');return false;">Home</a>
+      <a href="#" class="nav-link" data-page="about" onclick="navigate('about');return false;">Sobre Nós</a>
+      <a href="#" class="nav-link nav-link-pricing" onclick="navigate('home');setTimeout(()=>document.getElementById('pricing').scrollIntoView({behavior:'smooth'}),400);return false;">Planos</a>
+      <a href="#" class="nav-link auth-only hidden" data-page="dashboard" onclick="navigate('dashboard');return false;">Dashboard</a>
+      <a href="#" class="nav-link auth-only hidden" data-page="library" onclick="navigate('library');return false;">Biblioteca</a>
+      <a href="#" class="nav-link auth-only hidden" data-page="new-content" onclick="navigate('new-content');return false;">Novo Conteúdo</a>
+      <a href="#" class="nav-link auth-only hidden" data-page="profile" onclick="navigate('profile');return false;">Perfil</a>
+    </nav>
+
+    <div class="header-actions">
+      <div id="guestActions" class="guest-actions">
+        <button class="btn-ghost btn-sm" onclick="navigate('auth','login')">Entrar</button>
+        <button class="btn-primary btn-sm" onclick="navigate('auth','register')">Cadastrar</button>
+      </div>
+      <div id="userActions" class="user-actions hidden">
+        <div class="header-user" id="headerUser">
+          <div class="header-avatar" id="headerAvatar"></div>
+          <span id="headerName"></span>
+        </div>
+        <button class="btn-logout" onclick="logout()" title="Sair">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <button class="hamburger" id="hamburger" aria-label="Abrir menu" onclick="toggleMobileMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════ MOBILE MENU -->
+<div id="mobileMenu" class="mobile-menu">
+  <div class="mobile-menu-header">
+    <div class="header-logo">
+      <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+        <rect width="40" height="40" rx="10" fill="url(#mg)"/>
+        <path d="M12 28V14l8 7 8-7v14" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs><linearGradient id="mg" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#AA2340"/><stop offset="1" stop-color="#7a1a2e"/></linearGradient></defs>
+      </svg>
+      <span>Uni<em>AI</em></span>
+    </div>
+    <button class="mobile-close" onclick="toggleMobileMenu()" aria-label="Fechar menu">&times;</button>
+  </div>
+  <nav class="mobile-nav">
+    <a href="#" class="mobile-nav-link" data-page="home" onclick="navigate('home');toggleMobileMenu();return false;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </a>
+    <a href="#" class="mobile-nav-link" data-page="about" onclick="navigate('about');toggleMobileMenu();return false;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      Sobre Nós
+    </a>
+    <a href="#" class="mobile-nav-link auth-only hidden" data-page="dashboard" onclick="navigate('dashboard');toggleMobileMenu();return false;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="#" class="mobile-nav-link auth-only hidden" data-page="library" onclick="navigate('library');toggleMobileMenu();return false;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Biblioteca
+    </a>
+    <a href="#" class="mobile-nav-link auth-only hidden" data-page="new-content" onclick="navigate('new-content');toggleMobileMenu();return false;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Novo Conteúdo
+    </a>
+    <a href="#" class="mobile-nav-link auth-only hidden" data-page="profile" onclick="navigate('profile');toggleMobileMenu();return false;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Perfil
+    </a>
+  </nav>
+  <div class="mobile-actions">
+    <div id="mobileGuestActions" class="mobile-auth-btns">
+      <button class="btn-ghost btn-full" onclick="navigate('auth','login');toggleMobileMenu();">Entrar</button>
+      <button class="btn-primary btn-full" onclick="navigate('auth','register');toggleMobileMenu();">Cadastrar</button>
+    </div>
+    <div id="mobileUserActions" class="hidden">
+      <button class="btn-ghost btn-full" onclick="logout();toggleMobileMenu();">Sair da conta</button>
+    </div>
+  </div>
+</div>
+<div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileMenu()"></div>
+
+<!-- ══════════════════════════════════════════ MAIN -->
+<main id="app">
+
+<!-- ─────────────────────────── PAGE: HOME ─────── -->
+<section id="page-home" class="page active">
+
+  <!-- Hero -->
+  <div class="hero">
+    <canvas id="particleCanvas" class="hero-canvas"></canvas>
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-overlay"></div>
+    <div class="container hero-inner">
+      <div class="hero-content reveal-fade">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          Alimentado por Claude AI &mdash; Anthropic
+        </div>
+        <h1 class="hero-title">
+          Sua Jornada Acadêmica<br>
+          <span class="gradient-text">Reinventada pela <span id="typewriterText">IA</span><span class="type-cursor">|</span></span>
+        </h1>
+        <p class="hero-subtitle">
+          A plataforma que transforma como você estuda, revisa e aprende. Resumos inteligentes, questões personalizadas, explicações didáticas e muito mais — tudo em um só lugar.
+        </p>
+        <div class="hero-cta">
+          <button class="btn-primary btn-lg btn-magnetic" onclick="navigate('auth','register')">
+            Começar Gratuitamente
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+          <button class="btn-ghost btn-lg" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">
+            Como Funciona
+          </button>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><strong>50K+</strong><span>Alunos</span></div>
+          <div class="hero-stat-sep"></div>
+          <div class="hero-stat"><strong>200K+</strong><span>Resumos</span></div>
+          <div class="hero-stat-sep"></div>
+          <div class="hero-stat"><strong>98%</strong><span>Satisfação</span></div>
+        </div>
+      </div>
+      <div class="hero-visual" id="heroVisual">
+        <div class="ui-card floating" id="heroCard1">
+          <div class="ui-card-header">
+            <div class="ui-dots"><span></span><span></span><span></span></div>
+            <span class="ui-card-title">Resumo Inteligente</span>
+            <div class="ui-tag">IA</div>
+          </div>
+          <div class="ui-card-body">
+            <div class="ui-input-row">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span>Termodinâmica — Capítulo 3</span>
+            </div>
+            <div class="ui-response">
+              <div class="ui-response-tag">✓ Resumo gerado</div>
+              <div class="ui-line" style="width:90%"></div>
+              <div class="ui-line" style="width:75%"></div>
+              <div class="ui-line" style="width:85%"></div>
+              <div class="ui-line" style="width:60%"></div>
+            </div>
+            <div class="ui-btns">
+              <div class="ui-btn solid">Salvar</div>
+              <div class="ui-btn outline">Gerar Quiz</div>
+            </div>
+          </div>
+        </div>
+        <div class="ui-card-mini floating-delayed" id="heroCard2">
+          <div class="ui-mini-icon">🎯</div>
+          <div>
+            <div class="ui-mini-label">Quiz gerado</div>
+            <div class="ui-mini-sub">5 questões prontas</div>
+          </div>
+        </div>
+        <div class="ui-card-mini floating-alt" id="heroCard3">
+          <div class="ui-mini-icon">📅</div>
+          <div>
+            <div class="ui-mini-label">Cronograma</div>
+            <div class="ui-mini-sub">7 dias planejados</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-scroll-hint">
+      <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <section class="section features-section" id="features">
+    <div class="container">
+      <div class="section-header reveal-fade">
+        <div class="section-badge">Funcionalidades</div>
+        <h2>Tudo que você precisa para<br><span class="gradient-text">se destacar</span></h2>
+        <p>Ferramentas de IA desenvolvidas especificamente para a realidade universitária brasileira</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card reveal-fade" style="--delay:0.05s">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg>
+          </div>
+          <h3>Resumo Inteligente</h3>
+          <p>Transforme textos longos em resumos didáticos, organizados por tópicos e destaques.</p>
+        </div>
+        <div class="feature-card reveal-fade" style="--delay:0.1s">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <h3>Explicação Simplificada</h3>
+          <p>Conteúdo complexo reexplicado com linguagem clara, analogias e exemplos do cotidiano.</p>
+        </div>
+        <div class="feature-card reveal-fade" style="--delay:0.15s">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <h3>Gerador de Questões</h3>
+          <p>5 questões desafiadoras com gabarito comentado para fixar o conteúdo estudado.</p>
+        </div>
+        <div class="feature-card reveal-fade" style="--delay:0.2s">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+          <h3>Quiz Interativo</h3>
+          <p>Quiz de múltipla escolha com pontuação e feedback instantâneo para testar seus conhecimentos.</p>
+        </div>
+        <div class="feature-card reveal-fade" style="--delay:0.25s">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <h3>Cronograma Semanal</h3>
+          <p>Planejamento personalizado com sessões de estudo estratégicas e pausas inteligentes.</p>
+        </div>
+        <div class="feature-card feature-card-wide reveal-fade" style="--delay:0.3s">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <h3>Chat Acadêmico</h3>
+          <p>Converse diretamente com a IA sobre qualquer conteúdo salvo. Tire dúvidas, aprofunde conceitos e explore o material de forma interativa e personalizada.</p>
+          <div class="feature-badge-new">PDF incluso</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section how-section" id="how-it-works">
+    <div class="container">
+      <div class="section-header reveal-fade">
+        <div class="section-badge">Processo</div>
+        <h2>Como o <span class="gradient-text">UniAI</span> funciona</h2>
+        <p>Em três passos simples, transforme qualquer conteúdo em conhecimento sólido</p>
+      </div>
+      <div class="how-steps">
+        <div class="how-step reveal-fade" style="--delay:0s">
+          <div class="step-num">01</div>
+          <div class="step-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <h3>Envie seu Conteúdo</h3>
+          <p>Cole textos, notas de aula, trechos de livro ou envie um PDF diretamente.</p>
+        </div>
+        <div class="how-connector"><div class="connector-line"></div></div>
+        <div class="how-step reveal-fade" style="--delay:0.15s">
+          <div class="step-num">02</div>
+          <div class="step-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <h3>IA Processa e Analisa</h3>
+          <p>O Claude AI analisa o material, identificando conceitos-chave e relações essenciais.</p>
+        </div>
+        <div class="how-connector"><div class="connector-line"></div></div>
+        <div class="how-step reveal-fade" style="--delay:0.3s">
+          <div class="step-num">03</div>
+          <div class="step-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <h3>Receba Auxílio Acadêmico</h3>
+          <p>Resumos, questões, explicações e cronogramas personalizados prontos para usar.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="section stats-section" id="stats">
+    <div class="container">
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-item reveal-fade" style="--delay:0s">
+          <div class="stat-value" data-target="50000">0</div>
+          <div class="stat-label">Alunos Auxiliados</div>
+        </div>
+        <div class="stat-item reveal-fade" style="--delay:0.1s">
+          <div class="stat-value" data-target="200000">0</div>
+          <div class="stat-label">Resumos Gerados</div>
+        </div>
+        <div class="stat-item reveal-fade" style="--delay:0.2s">
+          <div class="stat-value" data-target="1500000">0</div>
+          <div class="stat-label">Horas Otimizadas</div>
+        </div>
+        <div class="stat-item reveal-fade" style="--delay:0.3s">
+          <div class="stat-value" data-target="98" data-suffix="%">0</div>
+          <div class="stat-label">Taxa de Satisfação</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="section pricing-section" id="pricing">
+    <div class="container">
+      <div class="section-header reveal-fade">
+        <div class="section-badge">Planos</div>
+        <h2>Simples e <span class="gradient-text">transparente</span></h2>
+        <p>Acesse gratuitamente durante o Beta. Planos premium em breve com benefícios exclusivos.</p>
+      </div>
+
+      <div class="pricing-toggle reveal-fade">
+        <button class="pricing-toggle-btn active" id="pricingMonthly" onclick="setPricingPeriod('monthly')">Mensal</button>
+        <button class="pricing-toggle-btn" id="pricingAnnual" onclick="setPricingPeriod('annual')">
+          Anual
+          <span class="pricing-discount">-20%</span>
+        </button>
+      </div>
+
+      <div class="pricing-grid">
+        <div class="pricing-card reveal-fade" style="--delay:0.05s">
+          <div class="pricing-badge-top">Atual</div>
+          <div class="pricing-plan">Básico</div>
+          <div class="pricing-price-wrap">
+            <div class="pricing-price">
+              <span class="pricing-currency"></span>
+              <span class="pricing-amount" data-monthly="Gratuito" data-annual="Gratuito">Gratuito</span>
+            </div>
+            <div class="pricing-period">Para sempre</div>
+          </div>
+          <p class="pricing-desc">Comece a estudar com IA hoje mesmo. API própria necessária.</p>
+          <ul class="pricing-features">
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Plataforma completa</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Todas as ferramentas IA</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Biblioteca ilimitada</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Suporte a PDF</li>
+            <li class="pricing-feature-off"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>API inclusa na plataforma</li>
+            <li class="pricing-feature-off"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Suporte prioritário</li>
+          </ul>
+          <button class="btn-ghost btn-full" onclick="navigate('auth','register')">Começar Grátis</button>
+        </div>
+
+        <div class="pricing-card pricing-card-featured reveal-fade" style="--delay:0.15s">
+          <div class="pricing-badge-top">Em Breve</div>
+          <div class="pricing-plan">Pro</div>
+          <div class="pricing-price-wrap">
+            <div class="pricing-price">
+              <span class="pricing-currency">R$</span>
+              <span class="pricing-amount" data-monthly="29" data-annual="23">29</span>
+            </div>
+            <div class="pricing-period" id="pricingPeriodPro">/mês</div>
+          </div>
+          <p class="pricing-desc">Para estudantes que querem o máximo da IA acadêmica.</p>
+          <ul class="pricing-features">
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Tudo do Básico</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>API Claude incluída</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>500 gerações/mês</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Exportação de conteúdos</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Suporte prioritário</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Dashboard avançado</li>
+          </ul>
+          <button class="btn-primary btn-full" onclick="showToast('Plano Pro em breve! Use gratuitamente por enquanto.','info')">
+            Entrar na Lista de Espera
+          </button>
+        </div>
+
+        <div class="pricing-card reveal-fade" style="--delay:0.25s">
+          <div class="pricing-badge-top">Em Breve</div>
+          <div class="pricing-plan">Acadêmico</div>
+          <div class="pricing-price-wrap">
+            <div class="pricing-price">
+              <span class="pricing-currency">R$</span>
+              <span class="pricing-amount" data-monthly="59" data-annual="47">59</span>
+            </div>
+            <div class="pricing-period" id="pricingPeriodAcad">/mês</div>
+          </div>
+          <p class="pricing-desc">Para grupos de estudo, turmas e instituições.</p>
+          <ul class="pricing-features">
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Tudo do Pro</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Até 10 usuários</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Gerações ilimitadas</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Biblioteca compartilhada</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Analytics de turma</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Suporte dedicado 24/7</li>
+          </ul>
+          <button class="btn-ghost btn-full" onclick="showToast('Plano Acadêmico em breve! Use gratuitamente por enquanto.','info')">
+            Entrar na Lista de Espera
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="section testimonials-section">
+    <div class="container">
+      <div class="section-header reveal-fade">
+        <div class="section-badge">Depoimentos</div>
+        <h2>O que nossos alunos<br><span class="gradient-text">estão dizendo</span></h2>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card reveal-fade" style="--delay:0.05s">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"O UniAI transformou completamente minha forma de estudar. Costumo revisar 3x mais conteúdo no mesmo tempo. Recomendo para todo universitário que busca eficiência."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="--av-color: #AA2340">MS</div>
+            <div class="testimonial-info">
+              <strong>Maria Silva</strong>
+              <span>Medicina · UNIFESP · 6º semestre</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card testimonial-featured reveal-fade" style="--delay:0.15s">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"Antes do UniAI eu passava horas estudando sem direção. Agora gero resumos em segundos, pratico com questões e chego nas provas muito mais confiante. Aprovei em todas!"</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="--av-color: #7a1a2e">CO</div>
+            <div class="testimonial-info">
+              <strong>Carlos Oliveira</strong>
+              <span>Engenharia Elétrica · UNICAMP · 4º ano</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card reveal-fade" style="--delay:0.25s">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"Para minha pós-graduação em Direito, o UniAI se tornou indispensável. Os resumos e explicações simplificadas me ajudam a absorver legislação densa com muito mais facilidade."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="--av-color: #c42b4c">JM</div>
+            <div class="testimonial-info">
+              <strong>Juliana Mendes</strong>
+              <span>Direito · PUC-SP · Pós-graduação</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section faq-section" id="faq">
+    <div class="container">
+      <div class="section-header reveal-fade">
+        <div class="section-badge">FAQ</div>
+        <h2>Perguntas <span class="gradient-text">frequentes</span></h2>
+        <p>Tudo que você precisa saber antes de começar</p>
+      </div>
+      <div class="faq-list reveal-fade">
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>O UniAI é gratuito?</span>
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>Sim! O UniAI está atualmente em fase Beta e é completamente gratuito. Você só precisa de uma chave de API da Anthropic (Claude AI), que você obtém no console da Anthropic. Planos com API incluída estarão disponíveis em breve.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Preciso de conhecimento técnico para usar?</span>
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>Não! O UniAI foi desenvolvido para ser extremamente intuitivo. Qualquer universitário consegue usar sem nenhum conhecimento técnico. Você apenas precisa de uma chave de API — e nós explicamos passo a passo como obtê-la.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Quais tipos de conteúdo posso enviar?</span>
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>Você pode enviar qualquer texto acadêmico: notas de aula, trechos de livros didáticos, artigos científicos, legislação, conteúdo de slides, anotações pessoais e muito mais. Também aceitamos PDFs de até 10 MB com extração automática de texto.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Como funciona a chave de API do Claude?</span>
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>A chave de API é um identificador que permite ao UniAI se comunicar com o Claude AI da Anthropic em seu nome. Ela trafega diretamente do seu navegador para a Anthropic — nunca é armazenada em nossos servidores. Você paga apenas pelo uso que faz na plataforma da Anthropic.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Meus dados ficam salvos onde?</span>
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>Todos os seus dados (conta, biblioteca, histórico) ficam salvos localmente no seu navegador via localStorage. Isso significa total privacidade — seus dados não saem do seu dispositivo. Sincronização em nuvem estará disponível nos planos Pro e Acadêmico.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Funciona para qualquer curso universitário?</span>
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>Sim! O UniAI é agnóstico em relação ao curso. Já foi utilizado com sucesso em Medicina, Engenharia, Direito, Administração, Psicologia, Biologia, Física, Matemática, Letras e muito mais. A IA se adapta ao conteúdo que você enviar.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Posso usar no celular ou tablet?</span>
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>Sim! O UniAI é totalmente responsivo e funciona em qualquer dispositivo. A experiência é otimizada tanto para desktop quanto para smartphones e tablets. Use onde e quando precisar estudar.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <span>Como o UniAI se diferencia do ChatGPT?</span>
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>O UniAI é especializado no contexto universitário brasileiro. Enquanto o ChatGPT é um assistente genérico, o UniAI oferece ferramentas acadêmicas específicas (quiz interativo, cronograma, questões com gabarito), uma biblioteca organizada, histórico de estudos e prompts otimizados para o aprendizado acadêmico.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <section class="cta-banner">
+    <div class="cta-particles"></div>
+    <div class="container">
+      <div class="cta-content reveal-fade">
+        <h2>Pronto para transformar<br>seus estudos?</h2>
+        <p>Junte-se a mais de 50.000 universitários que já usam a IA para estudar com mais inteligência.</p>
+        <button class="btn-primary btn-lg btn-magnetic" onclick="navigate('auth','register')">
+          Criar Conta Gratuita
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+</section>
+
+<!-- ─────────────────────────── PAGE: ABOUT ─────── -->
+<section id="page-about" class="page">
+  <div class="page-hero">
+    <div class="container">
+      <div class="section-badge">Sobre Nós</div>
+      <h1>Redefinindo o <span class="gradient-text">Futuro da Educação</span></h1>
+      <p>Nascemos da crença de que a inteligência artificial pode democratizar o acesso ao conhecimento de qualidade para todos os universitários brasileiros.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="about-mission">
+        <div class="section-badge">Nossa Missão</div>
+        <blockquote class="mission-statement">
+          "Capacitar cada universitário brasileiro com ferramentas de IA de nível mundial, transformando o modo como o conhecimento é construído, revisado e aplicado."
+        </blockquote>
+        <p class="mission-sub">O UniAI nasceu da frustração de estudantes que perdiam horas tentando sintetizar conteúdos complexos. Acreditamos que a tecnologia deve trabalhar para o estudante, não o contrário.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section about-values-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">Nossos Valores</div>
+        <h2>O que nos <span class="gradient-text">guia</span></h2>
+      </div>
+      <div class="values-grid">
+        <div class="value-card">
+          <div class="value-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <h3>Inovação Contínua</h3>
+          <p>Evoluímos constantemente nossa plataforma com as melhores tecnologias de IA disponíveis.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3>Acessibilidade</h3>
+          <p>Todo estudante merece acesso a ferramentas educacionais de excelência, independente da condição.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>Confiança &amp; Ética</h3>
+          <p>Desenvolvemos nossa IA com responsabilidade, garantindo privacidade e resultados verificáveis.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section about-ai-section">
+    <div class="container">
+      <div class="about-ai-grid">
+        <div class="about-ai-content">
+          <div class="section-badge">Tecnologia</div>
+          <h2>Por que <span class="gradient-text">IA na educação?</span></h2>
+          <p>A inteligência artificial não substitui o professor — ela potencializa o estudante. Com o UniAI, você tem acesso a um assistente disponível 24h, paciente, que adapta a explicação ao seu nível.</p>
+          <ul class="about-list">
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Processamento de qualquer conteúdo acadêmico em segundos</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Adaptação ao nível de dificuldade do estudante</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Disponibilidade total — estude quando e onde quiser</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Powered by Claude AI — um dos modelos mais avançados do mundo</li>
+          </ul>
+        </div>
+        <div class="about-ai-visual">
+          <div class="ai-metrics">
+            <div class="ai-metric"><span class="ai-metric-val">3x</span><span>Mais rápido</span></div>
+            <div class="ai-metric"><span class="ai-metric-val">95%</span><span>Precisão</span></div>
+            <div class="ai-metric"><span class="ai-metric-val">24/7</span><span>Disponível</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-badge">Time</div>
+        <h2>As mentes por trás do <span class="gradient-text">UniAI</span></h2>
+      </div>
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar" style="--tc: #AA2340">RM</div>
+          <h3>Rafael Mendes</h3>
+          <span class="team-role">Co-fundador &amp; CEO</span>
+          <p>"Acredito que toda faculdade brasileira merece acesso à melhor tecnologia educacional."</p>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="--tc: #7a1a2e">CV</div>
+          <h3>Carla Vieira</h3>
+          <span class="team-role">CTO &amp; Head de IA</span>
+          <p>"Especialista em NLP e educação computacional, focada em tornar a IA acessível."</p>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="--tc: #c42b4c">LS</div>
+          <h3>Luíza Santos</h3>
+          <span class="team-role">Head de Produto</span>
+          <p>"Design centrado no estudante real — cada decisão é guiada pela experiência de quem usa."</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ─────────────────────────── PAGE: AUTH ─────── -->
+<section id="page-auth" class="page">
+  <div class="auth-wrapper">
+    <div class="auth-bg-graphic"></div>
+    <div class="auth-container">
+      <div class="auth-header">
+        <a href="#" class="header-logo" onclick="navigate('home');return false;">
+          <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
+            <rect width="40" height="40" rx="12" fill="url(#ag)"/>
+            <path d="M12 28V14l8 7 8-7v14" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs><linearGradient id="ag" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#AA2340"/><stop offset="1" stop-color="#7a1a2e"/></linearGradient></defs>
+          </svg>
+          <span>Uni<em>AI</em></span>
+        </a>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Entrar</button>
+        <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Criar Conta</button>
+      </div>
+
+      <form class="auth-form" id="loginForm" onsubmit="handleLogin(event)">
+        <h2>Bem-vindo de volta!</h2>
+        <p class="auth-subtitle">Entre na sua conta UniAI</p>
+        <div class="form-group">
+          <label class="form-label">E-mail</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input type="email" class="form-input" id="loginEmail" placeholder="seu@email.com" autocomplete="email" required>
+          </div>
+          <span class="form-error" id="loginEmailErr"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Senha</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" class="form-input" id="loginPassword" placeholder="••••••••" autocomplete="current-password" required>
+            <button type="button" class="btn-eye" onclick="togglePass('loginPassword',this)" aria-label="Mostrar senha">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <span class="form-error" id="loginPasswordErr"></span>
+        </div>
+        <button type="submit" class="btn-primary btn-full btn-auth">Entrar na plataforma</button>
+        <p class="auth-switch">Não tem conta? <a href="#" onclick="switchAuthTab('register');return false;">Criar conta gratuita</a></p>
+      </form>
+
+      <form class="auth-form hidden" id="registerForm" onsubmit="handleRegister(event)">
+        <h2>Crie sua conta</h2>
+        <p class="auth-subtitle">Comece a estudar com IA hoje mesmo</p>
+        <div class="form-group">
+          <label class="form-label">Nome completo</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <input type="text" class="form-input" id="regName" placeholder="João da Silva" autocomplete="name" required minlength="3" maxlength="100">
+          </div>
+          <span class="form-error" id="regNameErr"></span>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">E-mail</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <input type="email" class="form-input" id="regEmail" placeholder="seu@email.com" autocomplete="email">
+            </div>
+            <span class="form-error" id="regEmailErr"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Telefone</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.06 6.06l.94-.94a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <input type="tel" class="form-input" id="regPhone" placeholder="(11) 99999-9999" autocomplete="tel" oninput="maskPhone(this)">
+            </div>
+            <span class="form-error" id="regPhoneErr"></span>
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Faculdade</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              <input type="text" class="form-input" id="regUniversity" placeholder="Ex: USP, UNICAMP...">
+            </div>
+            <span class="form-error" id="regUniversityErr"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Curso</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              <input type="text" class="form-input" id="regCourse" placeholder="Ex: Engenharia, Direito...">
+            </div>
+            <span class="form-error" id="regCourseErr"></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Senha</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" class="form-input" id="regPassword" placeholder="Mín. 8 caracteres" oninput="updateStrength(this.value)" autocomplete="new-password">
+            <button type="button" class="btn-eye" onclick="togglePass('regPassword',this)" aria-label="Mostrar senha">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="password-strength" id="passwordStrength">
+            <div class="strength-bars">
+              <div class="strength-bar" id="sb1"></div>
+              <div class="strength-bar" id="sb2"></div>
+              <div class="strength-bar" id="sb3"></div>
+              <div class="strength-bar" id="sb4"></div>
+            </div>
+            <span class="strength-text" id="strengthText"></span>
+          </div>
+          <div class="password-rules">
+            <span class="rule" id="rule-len">8+ caracteres</span>
+            <span class="rule" id="rule-upper">Maiúscula</span>
+            <span class="rule" id="rule-lower">Minúscula</span>
+            <span class="rule" id="rule-num">Número</span>
+            <span class="rule" id="rule-spec">Especial</span>
+          </div>
+          <span class="form-error" id="regPasswordErr"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirmar Senha</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" class="form-input" id="regConfirm" placeholder="Repita a senha" autocomplete="new-password">
+            <button type="button" class="btn-eye" onclick="togglePass('regConfirm',this)" aria-label="Mostrar senha">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <span class="form-error" id="regConfirmErr"></span>
+        </div>
+        <button type="submit" class="btn-primary btn-full btn-auth">Criar Conta Gratuita</button>
+        <p class="auth-switch">Já tem conta? <a href="#" onclick="switchAuthTab('login');return false;">Entrar</a></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────── PAGE: DASHBOARD ─────── -->
+<section id="page-dashboard" class="page">
+  <div class="app-page-wrapper">
+    <div class="container">
+      <div class="dash-header">
+        <div>
+          <h1 id="dashGreeting">Olá! 👋</h1>
+          <p id="dashDate" class="dash-date"></p>
+        </div>
+        <button class="btn-primary btn-sm" onclick="navigate('new-content')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo Conteúdo
+        </button>
+      </div>
+
+      <div class="mini-stats-grid">
+        <div class="mini-stat">
+          <div class="mini-stat-icon" style="--ic: #AA2340">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+          <div>
+            <div class="mini-stat-value" id="dashLibCount">0</div>
+            <div class="mini-stat-label">Conteúdos salvos</div>
+          </div>
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-icon" style="--ic: #c42b4c">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg>
+          </div>
+          <div>
+            <div class="mini-stat-value" id="dashResumosCount">0</div>
+            <div class="mini-stat-label">Resumos gerados</div>
+          </div>
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-icon" style="--ic: #8a1c32">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            <div class="mini-stat-value" id="dashStreak">7 dias</div>
+            <div class="mini-stat-label">Sequência de estudos</div>
+          </div>
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-icon" style="--ic: #7a1a2e">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div>
+            <div class="mini-stat-value">98%</div>
+            <div class="mini-stat-label">Aproveitamento</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-card chart-card">
+          <div class="dash-card-header">
+            <h3>Progresso Semanal</h3>
+            <span class="dash-card-tag">Horas de estudo</span>
+          </div>
+          <div class="bar-chart" id="weekChart"></div>
+        </div>
+
+        <div class="dash-card activity-card">
+          <div class="dash-card-header">
+            <h3>Atividade Recente</h3>
+            <a href="#" class="dash-link" onclick="navigate('library');return false;">Ver tudo</a>
+          </div>
+          <div id="dashActivity" class="activity-list"></div>
+        </div>
+
+        <!-- Pomodoro Timer -->
+        <div class="dash-card pomodoro-card">
+          <div class="dash-card-header">
+            <h3>Timer de Estudos</h3>
+            <span class="dash-card-tag" id="pomodoroMode">Foco</span>
+          </div>
+          <div class="pomodoro-body">
+            <div class="pomodoro-ring-wrap">
+              <svg class="pomodoro-svg" viewBox="0 0 120 120">
+                <circle class="pomodoro-bg" cx="60" cy="60" r="52"/>
+                <circle class="pomodoro-progress" id="pomodoroProgress" cx="60" cy="60" r="52"
+                  stroke-dasharray="326.7" stroke-dashoffset="0"/>
+              </svg>
+              <div class="pomodoro-center">
+                <div class="pomodoro-time" id="pomodoroTime">25:00</div>
+                <div class="pomodoro-label" id="pomodoroLabel">Estudar</div>
+              </div>
+            </div>
+            <div class="pomodoro-sessions">
+              <span class="pomodoro-session-dot active" id="ps1"></span>
+              <span class="pomodoro-session-dot" id="ps2"></span>
+              <span class="pomodoro-session-dot" id="ps3"></span>
+              <span class="pomodoro-session-dot" id="ps4"></span>
+            </div>
+            <div class="pomodoro-controls">
+              <button class="pomo-btn pomo-btn-ghost" onclick="pomodoroReset()" title="Reiniciar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+              </button>
+              <button class="pomo-btn pomo-btn-primary" id="pomodoroStartBtn" onclick="pomodoroToggle()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="pomodoroPlayIcon"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <span id="pomodoroStartLabel">Iniciar</span>
+              </button>
+              <button class="pomo-btn pomo-btn-ghost" onclick="pomodoroSkip()" title="Próxima fase">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-card quick-card">
+          <div class="dash-card-header"><h3>Ações Rápidas</h3></div>
+          <div class="quick-grid">
+            <button class="quick-btn" onclick="navigate('new-content')">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg>
+              Resumir
+            </button>
+            <button class="quick-btn" onclick="navigate('new-content')">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Questões
+            </button>
+            <button class="quick-btn" onclick="navigate('new-content')">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              Quiz
+            </button>
+            <button class="quick-btn" onclick="navigate('library')">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              Biblioteca
+            </button>
+          </div>
+        </div>
+
+        <div class="dash-card tasks-card">
+          <div class="dash-card-header"><h3>Metas da Semana</h3></div>
+          <ul class="task-list" id="taskList">
+            <li class="task-item done"><label><input type="checkbox" checked onchange="toggleTask(this)"><span>Revisar Cálculo II — Integrais</span></label></li>
+            <li class="task-item done"><label><input type="checkbox" checked onchange="toggleTask(this)"><span>Resumo de Física Quântica</span></label></li>
+            <li class="task-item"><label><input type="checkbox" onchange="toggleTask(this)"><span>Quiz de Termodinâmica</span></label></li>
+            <li class="task-item"><label><input type="checkbox" onchange="toggleTask(this)"><span>Ler Cap. 5 — Programação Linear</span></label></li>
+            <li class="task-item"><label><input type="checkbox" onchange="toggleTask(this)"><span>Preparar resumo de TCC</span></label></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────── PAGE: PROFILE ─────── -->
+<section id="page-profile" class="page">
+  <div class="app-page-wrapper">
+    <div class="container">
+      <div class="page-title-row">
+        <div>
+          <h1>Perfil Acadêmico</h1>
+          <p class="page-subtitle">Gerencie suas informações e preferências</p>
+        </div>
+      </div>
+      <div class="profile-layout">
+        <div class="profile-left">
+          <div class="avatar-card">
+            <div class="avatar-circle" id="profileAvatar"></div>
+            <div class="avatar-meta">
+              <h3 id="profileAvatarName"></h3>
+              <span id="profileAvatarCourse"></span>
+            </div>
+            <div class="avatar-badges">
+              <div class="av-badge"><span id="profileUniBadge"></span></div>
+            </div>
+          </div>
+          <div class="profile-stats-card">
+            <div class="profile-stat">
+              <strong id="profileStatLib">0</strong>
+              <span>Conteúdos</span>
+            </div>
+            <div class="profile-stat">
+              <strong>7</strong>
+              <span>Dias seguidos</span>
+            </div>
+          </div>
+        </div>
+        <div class="profile-right">
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <h3>Informações Pessoais</h3>
+              <button class="btn-ghost btn-sm" id="editProfileBtn" onclick="toggleEditProfile()">Editar</button>
+            </div>
+            <form id="profileForm" onsubmit="saveProfile(event)">
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label class="form-label">Nome completo</label>
+                  <div class="input-wrapper"><input type="text" class="form-input" id="profileName" readonly></div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">E-mail</label>
+                  <div class="input-wrapper"><input type="email" class="form-input" id="profileEmail" readonly></div>
+                </div>
+              </div>
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label class="form-label">Telefone</label>
+                  <div class="input-wrapper"><input type="tel" class="form-input" id="profilePhone" readonly oninput="maskPhone(this)"></div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Faculdade</label>
+                  <div class="input-wrapper"><input type="text" class="form-input" id="profileUniversity" readonly></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Curso</label>
+                <div class="input-wrapper"><input type="text" class="form-input" id="profileCourse" readonly></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Senha</label>
+                <div class="input-wrapper">
+                  <input type="password" class="form-input" id="profilePassword" value="••••••••" readonly>
+                  <button type="button" class="btn-eye" onclick="togglePass('profilePassword',this)" aria-label="Mostrar senha">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div class="profile-actions hidden" id="profileActions">
+                <button type="submit" class="btn-primary">Salvar Alterações</button>
+                <button type="button" class="btn-ghost" onclick="cancelEditProfile()">Cancelar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────── PAGE: LIBRARY ─────── -->
+<section id="page-library" class="page">
+  <div class="app-page-wrapper">
+    <div class="container">
+      <div class="page-title-row">
+        <div>
+          <h1>Biblioteca Inteligente</h1>
+          <p class="page-subtitle">Seu histórico de conteúdos e conversas acadêmicas</p>
+        </div>
+        <button class="btn-primary btn-sm" onclick="navigate('new-content')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo Conteúdo
+        </button>
+      </div>
+      <div class="library-search-bar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="librarySearch" class="library-search-input" placeholder="Buscar por matéria ou título..." oninput="filterLibrary(this.value)">
+      </div>
+      <div id="libraryGrid" class="library-grid"></div>
+      <div id="libraryEmpty" class="library-empty hidden">
+        <div class="empty-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        </div>
+        <h3>Biblioteca vazia</h3>
+        <p>Você ainda não salvou nenhum conteúdo. Comece agora!</p>
+        <button class="btn-primary" onclick="navigate('new-content')">Criar primeiro conteúdo</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────── PAGE: NEW CONTENT ─────── -->
+<section id="page-new-content" class="page">
+  <div class="app-page-wrapper">
+    <div class="container nc-container">
+      <div class="page-title-row">
+        <div>
+          <h1>Novo Conteúdo</h1>
+          <p class="page-subtitle">Cole texto ou envie um PDF — a IA cuida do resto</p>
+        </div>
+      </div>
+
+      <div class="dash-card api-card" id="apiSection">
+        <button class="api-toggle-btn" onclick="toggleApiSection()" id="apiToggleBtn">
+          <div class="api-toggle-left">
+            <div class="api-status-dot" id="apiStatusDot"></div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span id="apiToggleLabel">Configurar Chave da API Anthropic</span>
+          </div>
+          <svg class="api-chevron" id="apiChevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="api-body" id="apiBody">
+          <div class="input-wrapper">
+            <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" class="form-input" id="ncApiKey" placeholder="sk-ant-api03-..." autocomplete="off" oninput="onApiKeyInput(this.value)">
+            <button type="button" class="btn-eye" onclick="togglePass('ncApiKey',this)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <p class="api-hint">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            Sua chave trafega diretamente para a Anthropic e não é armazenada em nenhum servidor.
+          </p>
+        </div>
+      </div>
+
+      <div class="dash-card nc-input-card">
+        <div class="nc-input-tabs">
+          <button class="nc-input-tab active" id="ncTabTexto" onclick="switchInputTab('text')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg>
+            Texto
+          </button>
+          <button class="nc-input-tab" id="ncTabPDF" onclick="switchInputTab('pdf')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            PDF
+            <span class="nc-tab-badge">Novo</span>
+          </button>
+        </div>
+
+        <div id="ncTextPane" class="nc-pane">
+          <div class="nc-content-header">
+            <label class="form-label" style="margin:0">Conteúdo de Estudo</label>
+            <button class="btn-ghost btn-sm" id="ncClearBtn" onclick="clearNcContent()" style="display:none">Limpar</button>
+          </div>
+          <textarea id="ncContent" class="nc-textarea" placeholder="Cole aqui o conteúdo que deseja estudar&#10;&#10;Exemplos: trecho de livro, slides da aula, anotações, artigo científico, lei, teoria, capítulo...&#10;&#10;Quanto mais completo o conteúdo, melhor o resultado da IA." rows="10" oninput="onNcContentInput()"></textarea>
+          <div class="nc-stats">
+            <span id="ncWordCount">0 palavras</span>
+            <span class="stat-dot">·</span>
+            <span id="ncCharCount">0 caracteres</span>
+            <span class="nc-shortcut">Ctrl+Enter para resumir</span>
+          </div>
+        </div>
+
+        <div id="ncPdfPane" class="nc-pane hidden">
+          <div class="pdf-drop-zone" id="pdfDropZone"
+               ondragover="pdfDragOver(event)"
+               ondragleave="pdfDragLeave(event)"
+               ondrop="pdfDrop(event)"
+               onclick="document.getElementById('pdfFileInput').click()">
+            <div class="pdf-drop-content">
+              <div class="pdf-drop-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              </div>
+              <p class="pdf-drop-title">Arraste seu PDF aqui</p>
+              <p class="pdf-drop-or">ou clique para selecionar</p>
+              <p class="pdf-drop-hint">Máx. 10 MB · Texto extraído automaticamente pela IA</p>
+            </div>
+          </div>
+          <input type="file" id="pdfFileInput" accept=".pdf" style="display:none" onchange="handlePdfFile(this.files[0])">
+
+          <div id="pdfFileInfo" class="pdf-file-info hidden">
+            <div class="pdf-file-card">
+              <div class="pdf-file-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <div class="pdf-file-meta">
+                <div class="pdf-file-name" id="pdfFileName">arquivo.pdf</div>
+                <div class="pdf-file-stats" id="pdfFileStats">Processando...</div>
+                <div class="pdf-extract-progress" id="pdfExtractProgress">
+                  <div class="pdf-progress-track">
+                    <div class="pdf-progress-bar" id="pdfProgressBar" style="width:0%"></div>
+                  </div>
+                  <span class="pdf-progress-label" id="pdfProgressText">Iniciando...</span>
+                </div>
+              </div>
+              <button class="pdf-clear-btn" onclick="clearPdf()" title="Remover arquivo">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div class="pdf-text-preview" id="pdfTextPreview"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-grid">
+        <button class="action-btn" id="actSummarize" onclick="handleNcAction('summarize')">
+          <div class="action-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg></div>
+          <span class="action-label">Resumir</span>
+          <span class="action-desc">Tópicos e destaques</span>
+        </button>
+        <button class="action-btn" id="actExplain" onclick="handleNcAction('explain')">
+          <div class="action-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+          <span class="action-label">Explicar</span>
+          <span class="action-desc">Linguagem simples</span>
+        </button>
+        <button class="action-btn" id="actQuestions" onclick="handleNcAction('questions')">
+          <div class="action-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+          <span class="action-label">Questões</span>
+          <span class="action-desc">Com gabarito comentado</span>
+        </button>
+        <button class="action-btn" id="actQuiz" onclick="handleNcAction('quiz')">
+          <div class="action-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+          <span class="action-label">Quiz</span>
+          <span class="action-desc">Interativo com score</span>
+        </button>
+        <button class="action-btn" id="actSchedule" onclick="handleNcAction('schedule')">
+          <div class="action-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          <span class="action-label">Cronograma</span>
+          <span class="action-desc">Plano semanal</span>
+        </button>
+      </div>
+
+      <div class="dash-card response-card" id="ncResponseCard">
+        <div class="response-card-header">
+          <span class="form-label" id="ncResponseLabel" style="margin:0">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Resposta da IA
+          </span>
+          <div class="response-header-actions">
+            <button class="btn-abort hidden" id="ncAbortBtn" onclick="abortRequest()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+              Cancelar
+            </button>
+            <button class="btn-ghost btn-sm hidden" id="ncCopyBtn" onclick="copyResponse()">Copiar</button>
+            <button class="btn-ghost btn-sm hidden" id="ncExportBtn" onclick="exportResponse()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Exportar
+            </button>
+            <button class="btn-primary btn-sm hidden" id="ncSaveBtn" onclick="openSaveModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Salvar
+            </button>
+          </div>
+        </div>
+        <div id="ncLoading" class="nc-loading hidden">
+          <div class="nc-loading-orbs">
+            <div class="nc-orb"></div><div class="nc-orb"></div><div class="nc-orb"></div>
+          </div>
+          <div class="nc-loading-info">
+            <span id="ncLoadingText" class="nc-loading-msg">Analisando conteúdo...</span>
+            <span class="nc-loading-sub">IA processando seu material</span>
+          </div>
+        </div>
+        <div id="ncEmpty" class="nc-empty">
+          <div class="nc-empty-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <p>Cole o conteúdo e escolha uma ação acima</p>
+        </div>
+        <div id="ncQuiz" class="nc-quiz hidden"></div>
+        <div id="ncResponse" class="nc-response hidden"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ══════════════════════════════════════════ CHAT MODAL -->
+<div id="chatModal" class="modal-overlay hidden" onclick="closeChatModal(event)">
+  <div class="chat-box" role="dialog" aria-modal="true" aria-label="Chat acadêmico">
+    <div class="chat-header">
+      <div>
+        <h3 id="chatTitle">Chat Acadêmico</h3>
+        <p id="chatSubject" class="chat-subject"></p>
+      </div>
+      <button class="modal-close" onclick="closeChatModal(null)" aria-label="Fechar">&times;</button>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-area">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Faça uma pergunta sobre o conteúdo..." onkeydown="chatKeyDown(event)" maxlength="500">
+      <button class="chat-send" id="chatSendBtn" onclick="sendChatMessage()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ SAVE MODAL -->
+<div id="saveModal" class="modal-overlay hidden" onclick="closeSaveModal(event)">
+  <div class="save-box" role="dialog" aria-modal="true">
+    <div class="save-header">
+      <h3>Salvar na Biblioteca</h3>
+      <button class="modal-close" onclick="closeSaveModal(null)" aria-label="Fechar">&times;</button>
+    </div>
+    <form onsubmit="saveToLibrary(event)">
+      <div class="form-group">
+        <label class="form-label">Nome da Matéria</label>
+        <div class="input-wrapper">
+          <input type="text" class="form-input" id="saveSubject" placeholder="Ex: Cálculo II, Direito Civil, Física Quântica..." maxlength="80">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Título (opcional)</label>
+        <div class="input-wrapper">
+          <input type="text" class="form-input" id="saveTitle" placeholder="Ex: Capítulo 3 — Integrais Definidas" maxlength="120">
+        </div>
+      </div>
+      <div class="save-actions">
+        <button type="button" class="btn-ghost" onclick="closeSaveModal(null)">Cancelar</button>
+        <button type="submit" class="btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Salvar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ FOOTER -->
+<footer id="footer" class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <div class="header-logo">
+        <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+          <rect width="40" height="40" rx="10" fill="url(#fg)"/>
+          <path d="M12 28V14l8 7 8-7v14" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs><linearGradient id="fg" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#AA2340"/><stop offset="1" stop-color="#7a1a2e"/></linearGradient></defs>
+        </svg>
+        <span>Uni<em>AI</em></span>
+      </div>
+      <p>A plataforma acadêmica inteligente para universitários brasileiros.</p>
+      <div class="footer-social">
+        <a href="#" class="footer-social-link" aria-label="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="#" class="footer-social-link" aria-label="LinkedIn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+        <a href="#" class="footer-social-link" aria-label="Twitter/X">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-links-grid">
+      <div class="footer-col">
+        <h4>Plataforma</h4>
+        <a href="#" onclick="navigate('home');return false;">Home</a>
+        <a href="#" onclick="navigate('about');return false;">Sobre Nós</a>
+        <a href="#" onclick="navigate('auth','register');return false;">Cadastrar</a>
+        <a href="#" onclick="navigate('home');setTimeout(()=>document.getElementById('pricing').scrollIntoView({behavior:'smooth'}),400);return false;">Planos</a>
+      </div>
+      <div class="footer-col">
+        <h4>Funcionalidades</h4>
+        <a href="#" onclick="navigate('auth','register');return false;">Resumo Inteligente</a>
+        <a href="#" onclick="navigate('auth','register');return false;">Gerador de Questões</a>
+        <a href="#" onclick="navigate('auth','register');return false;">Cronograma IA</a>
+        <a href="#" onclick="navigate('auth','register');return false;">Quiz Interativo</a>
+      </div>
+      <div class="footer-col">
+        <h4>Suporte</h4>
+        <a href="#" onclick="navigate('home');setTimeout(()=>document.getElementById('faq').scrollIntoView({behavior:'smooth'}),400);return false;">FAQ</a>
+        <a href="#" onclick="showToast('Em breve: contato@uniai.com.br','info');return false;">Contato</a>
+        <a href="#" onclick="showToast('Política de privacidade em breve.','info');return false;">Privacidade</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container">
+      <span>© 2025 UniAI. Desenvolvido com Claude AI — fins educacionais.</span>
+      <span class="footer-bottom-right">Feito com ❤️ para estudantes brasileiros</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════ TOAST -->
+<div id="toastContainer" class="toast-container" aria-live="assertive"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="script.js"></script>
+</body>
+</html>
