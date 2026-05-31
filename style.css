@@ -560,15 +560,6 @@ img { max-width: 100%; }
   color: var(--text);
 }
 
-.type-cursor {
-  display: inline-block;
-  width: 3px;
-  color: var(--primary-l);
-  animation: blink 0.9s step-end infinite;
-  margin-left: 2px;
-  font-weight: 300;
-}
-@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
 
 .hero-subtitle {
   font-size: 1.08rem;

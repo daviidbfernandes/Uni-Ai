@@ -614,7 +614,7 @@ function navigate(page, sub) {
   if (page === 'dashboard')   initDashboard();
   if (page === 'profile')     initProfile();
   if (page === 'library')     renderLibrary();
-  if (page === 'home')        { initParticles(); initStatCounters(); initScrollReveal(); initTypewriter(); initHeroParallax(); }
+  if (page === 'home')        { initParticles(); initStatCounters(); initScrollReveal(); initHeroParallax(); }
   if (page === 'new-content') initNewContent();
 
   const mm = $('mobileMenu');
@@ -2190,7 +2190,6 @@ function init() {
         initParticles();
         initStatCounters();
         initScrollReveal();
-        initTypewriter();
         initHeroParallax();
       }
     }, 1400);
