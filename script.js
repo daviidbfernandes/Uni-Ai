@@ -308,44 +308,6 @@ function initCursor() {
   })();
 }
 
-/* ═══════════════════════════════════════════════════════════
-   TYPEWRITER
-═══════════════════════════════════════════════════════════ */
-function initTypewriter() {
-  const el = $('typewriterText');
-  if (!el) return;
-
-  const words = ['IA', 'Claude', 'Tecnologia', 'Inovação'];
-  let wi = 0, ci = words[0].length, deleting = false;
-
-  function tick() {
-    const word = words[wi];
-    if (!deleting) {
-      el.textContent = word.slice(0, ci);
-      ci++;
-      if (ci > word.length) {
-        ci = word.length;
-        deleting = true;
-        setTimeout(tick, 2200);
-        return;
-      }
-      setTimeout(tick, 130);
-    } else {
-      el.textContent = word.slice(0, ci);
-      ci--;
-      if (ci < 0) {
-        ci = 0;
-        deleting = false;
-        wi = (wi + 1) % words.length;
-        setTimeout(tick, 400);
-        return;
-      }
-      setTimeout(tick, 55);
-    }
-  }
-
-  setTimeout(tick, 1800);
-}
 
 /* ═══════════════════════════════════════════════════════════
    HERO PARALLAX
